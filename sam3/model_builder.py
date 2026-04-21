@@ -579,6 +579,8 @@ def build_sam3_image_model(
     enable_segmentation=True,
     enable_inst_interactivity=False,
     compile=False,
+    freeze_vision_backbone=False,
+    freeze_language_backbone=False,
 ):
     """
     Build SAM3 image model
@@ -647,6 +649,13 @@ def build_sam3_image_model(
     # Load checkpoint if provided
     if checkpoint_path is not None:
         _load_checkpoint(model, checkpoint_path)
+
+    if freeze_vision_backbone:
+        for param in model.backbone.vision_backbone.parameters():
+            param.requires_grad = False
+    if freeze_language_backbone:
+        for param in model.backbone.language_backbone.parameters():
+            param.requires_grad = False
 
     # Setup device and mode
     model = _setup_device_and_mode(model, device, eval_mode)
